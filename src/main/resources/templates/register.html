@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account — Ordering System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #2563eb;
+            --accent-dark: #1d4ed8;
+            --text: #111827;
+            --text2: #4b5563;
+            --text3: #9ca3af;
+            --border: #e5e7eb;
+            --bg: #f0f4f8;
+            --red: #dc2626;
+            --green: #059669;
+        }
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            align-items: stretch;
+        }
+        .left-panel {
+            width: 420px;
+            background: #111827;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 48px 44px;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            width: 300px; height: 300px;
+            border-radius: 50%;
+            background: rgba(37,99,235,0.15);
+            top: -80px; left: -80px;
+        }
+        .left-panel::after {
+            content: '';
+            position: absolute;
+            width: 200px; height: 200px;
+            border-radius: 50%;
+            background: rgba(37,99,235,0.08);
+            bottom: 60px; right: -60px;
+        }
+        .panel-brand { position: relative; z-index: 1; }
+        .panel-icon {
+            width: 44px; height: 44px;
+            background: var(--accent);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 16px;
+        }
+        .panel-icon svg { width: 24px; height: 24px; fill: white; }
+        .panel-title { font-size: 26px; font-weight: 800; color: #f9fafb; line-height: 1.2; letter-spacing: -0.5px; }
+        .panel-subtitle { font-size: 14px; color: #6b7280; margin-top: 10px; line-height: 1.5; }
+        .panel-features { position: relative; z-index: 1; }
+        .feature-item { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; color: #9ca3af; font-size: 13px; }
+        .feature-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; flex-shrink: 0; }
+        .panel-footer { position: relative; z-index: 1; font-size: 12px; color: #374151; }
+
+        .right-panel {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 32px;
+        }
+        .register-box { width: 100%; max-width: 440px; }
+        .register-heading { font-size: 26px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; margin-bottom: 6px; }
+        .register-sub { font-size: 14px; color: var(--text3); margin-bottom: 32px; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-group { margin-bottom: 18px; display: flex; flex-direction: column; gap: 7px; }
+        .form-group.full { grid-column: 1 / -1; }
+        .form-label { font-size: 12.5px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-input, .form-select {
+            width: 100%;
+            padding: 11px 15px;
+            background: #ffffff;
+            border: 1.5px solid var(--border);
+            border-radius: 9px;
+            color: var(--text);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .form-input::placeholder { color: var(--text3); font-weight: 400; }
+        .form-input:focus, .form-select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        .form-select { cursor: pointer; }
+        .form-select option { background: #ffffff; color: var(--text); }
+
+        .error-msg { display: flex; align-items: center; gap: 8px; background: #fef2f2; border: 1px solid #fecaca; color: var(--red); padding: 11px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; margin-bottom: 20px; }
+        .success-msg { display: flex; align-items: center; gap: 8px; background: #f0fdf4; border: 1px solid #bbf7d0; color: var(--green); padding: 11px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; margin-bottom: 20px; }
+
+        .register-btn {
+            width: 100%;
+            padding: 13px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 9px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 14.5px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.1s;
+            margin-top: 4px;
+        }
+        .register-btn:hover { background: var(--accent-dark); transform: translateY(-1px); }
+        .register-btn:active { transform: translateY(0); }
+
+        .divider { display: flex; align-items: center; gap: 12px; margin: 24px 0; color: var(--text3); font-size: 12px; }
+        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+        .login-link { text-align: center; font-size: 13.5px; color: var(--text3); }
+        .login-link a { color: var(--accent); font-weight: 600; text-decoration: none; transition: color 0.15s; }
+        .login-link a:hover { color: var(--accent-dark); }
+
+        @media (max-width: 768px) {
+            .left-panel { display: none; }
+            .right-panel { padding: 32px 24px; }
+            .form-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="left-panel">
+        <div class="panel-brand">
+            <div class="panel-icon">
+                <svg viewBox="0 0 24 24"><path d="M9 2H7a2 2 0 00-2 2v16a2 2 0 002 2h10a2 2 0 002-2V4a2 2 0 00-2-2h-2M9 2a1 1 0 001 1h4a1 1 0 001-1M9 2a1 1 0 000 1h4a1 1 0 000-1M12 11h4M12 15h4M8 11h.01M8 15h.01"/></svg>
+            </div>
+            <div class="panel-title">Ordering System</div>
+            <div class="panel-subtitle">Create your account to access the management portal.</div>
+        </div>
+        <div class="panel-features">
+            <div class="feature-item"><div class="feature-dot"></div>Real-time order tracking</div>
+            <div class="feature-item"><div class="feature-dot"></div>Inventory management</div>
+            <div class="feature-item"><div class="feature-dot"></div>Staff & labor oversight</div>
+            <div class="feature-item"><div class="feature-dot"></div>Sales reports & receipts</div>
+        </div>
+        <div class="panel-footer">© 2025 Ordering System</div>
+    </div>
+
+    <div class="right-panel">
+        <div class="register-box">
+            <h1 class="register-heading">Create your account</h1>
+            <p class="register-sub">Fill in the details below to get started</p>
+
+            <div th:if="${error}" class="error-msg">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span th:text="${error}">Error</span>
+            </div>
+
+            <form th:action="@{/register}" method="post" autocomplete="off">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" name="username" class="form-input" placeholder="e.g. juan123" required autocomplete="new-password">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="password" class="form-input" placeholder="Minimum 6 characters" minlength="6" required autocomplete="new-password">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" name="confirmPassword" class="form-input" placeholder="Re-enter password" minlength="6" required autocomplete="new-password">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Role</label>
+                    <select name="role" class="form-select" required>
+                        <option value="USER">User</option>
+                        <option value="STAFF">Staff</option>
+                        <option value="ADMIN">Admin</option>
+                    </select>
+                </div>
+                <button type="submit" class="register-btn">Create Account</button>
+            </form>
+
+            <div class="divider">or</div>
+            <div class="login-link">Already have an account? <a href="/login">Sign in here</a></div>
+        </div>
+    </div>
+
+    <script>
+        function clearFields() {
+            document.querySelectorAll('input[type="text"], input[type="password"]').forEach(i => i.value = '');
+        }
+        document.addEventListener('DOMContentLoaded', () => { clearFields(); setTimeout(clearFields, 100); setTimeout(clearFields, 500); });
+        window.addEventListener('load', () => { clearFields(); setTimeout(clearFields, 100); });
+    </script>
+</body>
+</html>
